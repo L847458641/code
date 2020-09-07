@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="css/bootstrap-table.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/crop.css" />
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <title>Document</title>
+</head>
+<body>
+  <div style="width:100%;" >
+  <!-- 头顶栏 -->
+  <div id="header" >
+    <div class="container top">
+      <div class="row">
+        <div class="col-xs-1"><a href="#"><img src="/images/iconback.png" alt=""></a></div>
+        <div class="col-xs-10"></div>
+        <div class="col-xs-1"><a href="#"><img src="/images/iconno.png" alt=""></a></div>
+      </div>
+    </div>
+    <div class="container container_box">
+      <table class="table2">
+        <tr>
+          <td>
+            <div class="row">
+              <div class="col-xs-1">参数类型：</div>
+              <div class="col-xs-1"><a href="#">全部</a></div>
+              <div class="col-xs-10">
+                <div id="info">
+                  <div id="info_item_1"></div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="row">
+              <div class="col-xs-1">水平级别：</div>
+              <div class="col-xs-1"><a href="#">全部</a></div>
+              <div class="col-xs-10">
+                <div id="info">
+                  <div id="info_item_2"></div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="row">
+              <div class="col-xs-1">价格：</div>
+              <div class="col-xs-1"><a href="#">全部</a></div>
+              <div class="col-xs-8">
+                <div id="info">
+                  <div id="info_item_3"></div>
+                </div>
+              </div>
+              <div class="col-xs-2">
+                <form id="myForm">
+                  <div class="group">
+                    <div class="group_item">
+                      ￥<input type="text" />
+                    </div>
+                    <span>&nbsp;-&nbsp;</span>
+                    <div class="group_item">
+                      ￥<input type="text" />
+                    </div>
+                    <button type="button" class="btn btn-primary btn-xs">确定</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="biaoge">
+  <!-- 列表 -->
+  <div id="bd">
+    <!-- Table -->
+    <table id="table" class="table">
+      <thead>
+        <tr>
+          <th id="th1" >项目</th>
+          <th id="th2" >描述</th>
+          <th id="th3" >价格</th>
+          <th id="th4" >标签名称</th>
+        </tr>
+      </thead>
+      <tbody id="tb">
+      </tbody>
+    </table>
+  </div>
+  <!-- 右侧任务包 -->
+  <div id="bp">
+    <div class="article half notice">
+      <div class="wrap-l">
+        <div class="title ue-clear">
+          <h2>已抢任务包</h2>
+          <a href="" class="more" target="right">更多</a>
+        </div>
+        <div style="width: 100%;" class="">
+          <table align="center" cellspacing="0" class="table3" id="tbody">
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="article toolbar">
+      <div class="wrap-r">
+        <div class="title ue-clear">
+          <h2>已经完成的任务包</h2>
+          <a href="" class="more" target="right">更多</a>
+        </div>
+        <div style="width: 100%;" class="">
+          <table align="center" cellspacing="0" class="table3" id="tbody2">
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+
+<script>
+
+  var list = {};
+  var data = {
+    page : 1,
+    size : 6,
+    total : 1,
+  };
+  // 获取的数组
+  var taskTestingList = [];
+  var projectList = [];
+  var taskComplete = [];
+  // 拼接数组
+  var str = '';
+  var str1 = '';
+
+  // 生成表格
+  $(function () {
+        $('#table').bootstrapTable({
+            method: "Get",
+            striped: false,
+            singleSelect: false,
+            cache: false,
+            height: 50,
+            url: 'http://api.sykcloud.com/common/common/main?platform=3&version=1.0.0',
+            dataType: "json",
+            pagination: true, //分页
+            pageSize: 11,
+            pageNumber: 1,
+            paginationShowPageGo: true, 
+            contentType: "application/x-www-form-urlencoded",
+            queryParams:null,
+            responseHandler:function(res){
+              //动态渲染表格之前获取有后台传递的数据时,用于获取出除去本身渲染所需的数据的额外参数
+              //详见此函数参数的api
+              var prl = res.res.source.projectList
+              return prl;
+            },  
+            columns: [
+                {
+                    field: '项目',
+                    align: 'center',
+                    field: 'cover_image',
+                    valign: 'middle',
+                    width: 54,
+                    formatter:function (value,row,index){
+                      console.log(index);
+                        return '<img  src='+value+' width="25px" height="25px">';
+                    }
+                },
+                {
+                    title: "描述",
+                    field: 'project_name',
+                    align: 'center',
+                    valign: 'middle',
+                    width: 260
+                },
+                {
+                    title: '价格',
+                    field: 'amount',
+                    align: 'center',
+                    valign: 'middle',
+                    width: 220,
+                    formatter:function (value,row,index){
+                        return '<span style="color:red;" >￥: '+value+'元</span>';
+                    }
+                },
+                {
+                    title: '标签名称',
+                    field: 'category_name',
+                    align: 'center',
+                    width: 240,
+                    formatter:function (value,row,index){
+                      switch(row.level_name){
+                        case "Level 1":
+                          var sn = '<span id="level" width="25px" height="25px">'+row.level_name+'</span>'
+                          break;
+                        case "Level 2":
+                          var sn = '<span id="level2" width="25px" height="25px">'+row.level_name+'</span>'
+                          break;
+                        case "Level 3":
+                          var sn = '<span id="level3" width="25px" height="25px">'+row.level_name+'</span>'
+                          break;
+                        default:
+                          var sn = '<span id="level4" width="25px" height="25px">'+row.level_name+'</span>'
+                          break;
+                      }
+                        return '<span id="val" width="25px" height="25px">'+value+'</span>' + sn;
+                    }
+                }
+            ],
+            onLoadSuccess: function(){  //加载成功时执行 
+              console.log(list);
+            },  
+            onLoadError: function(){  //加载失败时执行  
+                alert("加载数据失败");  
+            }
+        });
+    });
+
+  // $(document).ready(getList())
+
+  // function getList () {
+  
+  //       $.ajax({
+  //           //请求方式
+  //           type : "POST",
+  //           //请求的媒体类型
+  //           contentType: "application/json;charset=UTF-8",
+  //           //请求地址
+  //           url : "http://api.sykcloud.com/server/project/all-crowd?platform=3&version=1.0.0",
+  //           // &page="+prm.page+"&size="+prm.size
+  //           //数据，json字符串
+  //           // data : JSON.stringify(prm),
+  //           //请求成功
+  //           success : function(result) {
+  //               this.list = result.res.source.projectList
+  //               // for(i in this.list){
+  //               //   $("#tb").append('<tr><td><img src="'+this.list[i].cover_image+'" ></td><td>'+this.list[i].project_name+'</td><td> ￥ '+this.list[i].amount+'</td><td>'+this.list[i].category_name+' '+this.list[i].level_name+'</td></tr>')
+  //               // }
+  //               // $("#page").html("共"+result+"页")
+  //               console.log(this.list);
+  //           },
+  //           //请求失败，包含具体的错误信息
+  //           error : function(e){
+  //               console.log(e.status);
+  //               console.log(e.responseText);
+  //           }
+  //       });
+  // }
+
+$(document).ready(getList(),getTable());
+
+function getList() {
+  //获取的数组
+  var categoryLists = '';
+  var numArr = ['0-2499元', '2500-3999元', '4000-3999元', '6000-9999元', '10000元以上'];
+
+  var levelList = '';
+  //拼接标签
+  var categoryListes = '';
+  var levelListes = '';
+  var numStr = "";
+  $.ajax({
+    type: "GET",
+    url: 'http://api.sykcloud.com/server/project/all-crowd?platform=3&version=1.0.0&keyword=&category_id=&level_id=&start_money=&end_money=&page=&size=&sign=91ffb6534a54ff11a56ea36c4763cac6&nonce=1598006931&c_identity=jidinvoke&debugger=jid&channel=website',
+    dataType: "json",
+    success: function (res) {
+      categoryLists = res.res.source.categoryList;
+      levelList = res.res.source.levelList;
+      /****for循环****/
+      for (let i = 0; i < categoryLists.length; i++) {
+        categoryListes += '<span style=" margin-left: 20px;"><a href="#" style="color:#000" >' + categoryLists[
+            i].category_name +
+          '</a></sapn>';
+      };
+      document.getElementById("info_item_1").innerHTML = categoryListes;
+
+      for (let i = 0; i < levelList.length; i++) {
+        levelListes += '<span style=" margin-left: 20px;"><a href="#" style="color:#000" >' + levelList[i]
+          .level_name +
+          '</a></sapn>';
+      };
+      document.getElementById("info_item_2").innerHTML = levelListes;
+    }
+  });
+  for (let i = 0; i < numArr.length; i++) {
+    numStr += '<span style=" margin-left: 20px;"><a href="#" style="color:#000" >' + numArr[i] + '</a></sapn>';
+  };
+  document.getElementById("info_item_3").innerHTML = numStr;
+}
+
+  function getTable() {
+    $.ajax({
+      type: "GET",
+      url: 'http://api.sykcloud.com/server/project/all-crowd?platform=3&version=1.0.0&keyword=&category_id=&level_id=&start_money=&end_money=&page=&size=&sign=91ffb6534a54ff11a56ea36c4763cac6&nonce=1598006931&c_identity=jidinvoke&debugger=jid&channel=website',
+      dataType: "json",
+      success: function (res) {
+        taskTestingList = res.res.source.taskTesting;
+        projectList = res.res.source.projectList;
+        taskComplete = res.res.source.taskComplete;
+        for (let i=0;i<3;i++) {
+          str += '<tr>' +
+            '<td>' + taskTestingList[i].project_id+ '</td>'+ 
+            '<td>' + '<img width="45px;height:45px;" src='+taskTestingList[i].cover_image+'>' + '</td>' +
+            '<td>' + taskTestingList[i].project_name + '<br>' + taskTestingList[i].brief + '</td>'+ 
+            '<td style="color:red;" >'+'￥:' + projectList[i].amount + '</td>'
+          '</tr>';
+        }
+        var tbody = document.getElementById("tbody");
+        tbody.innerHTML = str;
+        console.log(taskComplete);
+
+        for (let i=0;i<taskComplete.length;i++) {
+          str1 += '<tr>' +
+            '<td>' + taskComplete[i].project_id+ '</td>'+ 
+            '<td>' + '<img width="45px;height:45px;" src='+taskComplete[i].cover_image+'>' + '</td>' +
+            '<td>' + taskComplete[i].project_name + '<br>' + taskComplete[i].brief + '</td>'+ 
+            '<td style="color:red;" >'+'￥:' + projectList[i].amount + '</td>'
+          '</tr>';
+        }
+        var tbody2 = document.getElementById("tbody2");
+        tbody2.innerHTML = str1;
+      }
+    });
+  }
+</script>
+
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-table.js"></script>
+<script src="js/bootstrap-table-zh-CN.min.js"></script>
+</html>
